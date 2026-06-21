@@ -20,4 +20,4 @@ ENV PATH="/home/${USERNAME}/.local/bin:${PATH}"
 
 WORKDIR /home/${USERNAME}/workspace
 
-CMD ["bash"]
+CMD ["claude"]

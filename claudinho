@@ -8,7 +8,7 @@ CONTAINER_NAME="claudinho-${PWD_HASH}"
 if docker inspect "$CONTAINER_NAME" &>/dev/null; then
   STATUS=$(docker inspect --format '{{.State.Status}}' "$CONTAINER_NAME")
   if [ "$STATUS" = "running" ]; then
-    docker exec -it "$CONTAINER_NAME" bash
+    docker exec -it "$CONTAINER_NAME" claude
   else
     docker start -ai "$CONTAINER_NAME"
   fi
