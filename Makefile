@@ -4,6 +4,9 @@ build:
 	docker build -t $(IMAGE) .
 
 run:
-	docker run -it --rm $(IMAGE)
+	docker run -it --rm -v $(PWD):/home/ubuntu/workspace $(IMAGE)
 
-.PHONY: build run
+install:
+	install -m 755 claudinho /usr/local/bin/claudinho
+
+.PHONY: build run install

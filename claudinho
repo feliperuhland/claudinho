@@ -1,0 +1,23 @@
+#!/bin/bash
+set -euo pipefail
+
+IMAGE="claudinho-code"
+PWD_HASH=$(printf '%s' "$PWD" | md5sum | cut -c1-12)
+CONTAINER_NAME="claudinho-${PWD_HASH}"
+
+if docker inspect "$CONTAINER_NAME" &>/dev/null; then
+  STATUS=$(docker inspect --format '{{.State.Status}}' "$CONTAINER_NAME")
+  if [ "$STATUS" = "running" ]; then
+    docker exec -it "$CONTAINER_NAME" bash
+  else
+    docker start -ai "$CONTAINER_NAME"
+  fi
+else
+  docker run -it \
+    --name "$CONTAINER_NAME" \
+    -v "${PWD}:/home/ubuntu/workspace" \
+    -v "${HOME}/.claude:/home/ubuntu/.claude" \
+    -v "${HOME}/.claude.json:/home/ubuntu/.claude.json" \
+    "$IMAGE" \
+    "$@"
+fi
