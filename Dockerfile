@@ -16,6 +16,8 @@ USER $USERNAME
 
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
+RUN curl -LsSf https://astral.sh/uv/install.sh | sh
+
 ENV PATH="/home/${USERNAME}/.local/bin:${PATH}"
 
 WORKDIR /home/${USERNAME}/workspace

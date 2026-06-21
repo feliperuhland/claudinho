@@ -5,6 +5,39 @@ IMAGE="claudinho-code"
 PWD_HASH=$(printf '%s' "$PWD" | md5sum | cut -c1-12)
 CONTAINER_NAME="claudinho-${PWD_HASH}"
 
+# Pull latest image; capture whether it was updated
+PULL_OUTPUT=$(docker pull "$IMAGE" 2>&1)
+if echo "$PULL_OUTPUT" | grep -q "Status: Downloaded newer image"; then
+  echo "New image available, updating..."
+  NEW_IMAGE=true
+else
+  NEW_IMAGE=false
+fi
+
+# If container exists and is using an outdated image, stop and remove it
+if docker inspect "$CONTAINER_NAME" &>/dev/null; then
+  CONTAINER_IMAGE=$(docker inspect --format '{{.Image}}' "$CONTAINER_NAME")
+  CURRENT_IMAGE=$(docker inspect --format '{{.Id}}' "$IMAGE")
+  if [ "$CONTAINER_IMAGE" != "$CURRENT_IMAGE" ] || [ "$NEW_IMAGE" = "true" ]; then
+    echo "Container is using an outdated image, recreating..."
+    STATUS=$(docker inspect --format '{{.State.Status}}' "$CONTAINER_NAME")
+    if [ "$STATUS" = "running" ]; then
+      docker stop "$CONTAINER_NAME"
+    fi
+    docker rm "$CONTAINER_NAME"
+  fi
+fi
+
+_run_container() {
+  docker run -it \
+    --name "$CONTAINER_NAME" \
+    -v "${PWD}:/home/ubuntu/workspace" \
+    -v "${HOME}/.claude:/home/ubuntu/.claude" \
+    -v "${HOME}/.claude.json:/home/ubuntu/.claude.json" \
+    "$IMAGE" \
+    "$@"
+}
+
 if docker inspect "$CONTAINER_NAME" &>/dev/null; then
   STATUS=$(docker inspect --format '{{.State.Status}}' "$CONTAINER_NAME")
   if [ "$STATUS" = "running" ]; then
@@ -13,11 +46,5 @@ if docker inspect "$CONTAINER_NAME" &>/dev/null; then
     docker start -ai "$CONTAINER_NAME"
   fi
 else
-  docker run -it \
-    --name "$CONTAINER_NAME" \
-    -v "${PWD}:/home/ubuntu/workspace" \
-    -v "${HOME}/.claude:/home/ubuntu/.claude" \
-    -v "${HOME}/.claude.json:/home/ubuntu/.claude.json" \
-    "$IMAGE" \
-    "$@"
+  _run_container "$@"
 fi
