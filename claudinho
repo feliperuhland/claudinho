@@ -5,8 +5,8 @@ IMAGE="claudinho-code"
 PWD_HASH=$(printf '%s' "$PWD" | md5sum | cut -c1-12)
 CONTAINER_NAME="claudinho-${PWD_HASH}"
 
-# Pull latest image; capture whether it was updated
-PULL_OUTPUT=$(docker pull "$IMAGE" 2>&1)
+# Pull latest image; capture whether it was updated (may fail for local-only images)
+PULL_OUTPUT=$(docker pull "$IMAGE" 2>&1) || true
 if echo "$PULL_OUTPUT" | grep -q "Status: Downloaded newer image"; then
   echo "New image available, updating..."
   NEW_IMAGE=true
