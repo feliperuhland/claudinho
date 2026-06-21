@@ -10,8 +10,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y --no-ins
   python3 \
   ripgrep \
   fd-find \
-  && apt-get clean \
-  && rm -rf /var/lib/apt/lists/*
+  && apt-get clean
 
 USER $USERNAME
 
