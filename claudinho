@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-IMAGE="claudinho-code"
+IMAGE="ghcr.io/feliperuhland/claudinho-code"
 PWD_HASH=$(printf '%s' "$PWD" | md5sum | cut -c1-12)
 CONTAINER_NAME="claudinho-${PWD_HASH}"
 

@@ -1,4 +1,4 @@
-IMAGE := claudinho-code
+IMAGE := ghcr.io/feliperuhland/claudinho-code
 
 build:
 	docker build -t $(IMAGE) .
